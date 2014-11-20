@@ -1,0 +1,157 @@
+{% extends "bundle://theme.admin/layout"%}
+{%import '/admin/sectors' %}
+{%import 'bundle://core/adminUtils' %}
+
+
+{%block cssImport%}
+<link href="{{bundleAssetHref('asset-metronic','plugins/select2/select2.css')}}" rel="stylesheet" type="text/css"/>
+<link href="{{bundleAssetHref('asset-metronic','plugins/select2/select2-metronic.css')}}" rel="stylesheet" type="text/css"/>
+{%endblock%}
+
+{%block jsImport%}
+<script src="{{bundleAssetHref('asset-metronic','plugins/select2/select2.min.js')}}" type="text/javascript"></script>
+{%endblock%}
+
+{%block mainMenu%}
+{{adminMenu(request,'contact.admin.contactInfo.index')}}
+{%endblock%}
+
+{%block topMenu%}
+{{adminTopMenu(request,'menu')}}
+{%endblock%}
+
+{%block body%}
+{{pageTitle("Info index",'contact manager')}}
+
+{% if error is not empty %}
+<div class="alert alert-warning">
+    {{error}}
+</div>
+{% endif %}
+{% if success is not empty  %}
+<div class="alert alert-success">
+    {{success}}
+</div>
+{% endif %}
+
+
+<div class="row">
+    <div class="col-sm-6">
+        {{list(list)}}
+    </div>
+    <div class="col-sm-6">
+        {{form(entityl,offerTypes)}}
+    </div>
+</div>
+{%endblock%}
+
+{% block pageScript %}
+<script>
+$('.select2_type').select2({
+    placeholder: "Select an option",
+    allowClear: true
+});
+</script>
+{% endblock %}
+
+<blockList>
+    {%macro list(data)%}
+    <div class="portlet box green">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-cogs"></i>Contact offer List
+            </div>        
+        </div>
+        <div class="portlet-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Last Name</th>
+                            <th>First Name</th>                        
+                            <th>Email</th>                        
+                            <th>Offer Type</th>                        
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for it in data%}
+                        <tr>
+                            <td>
+                                {{it.lastname}}
+                            </td>
+                            <td>
+                                {{it.firstname}}
+                            </td>
+                            <td>
+                                {{it.email}}
+                            </td>
+                            <td>
+                                {{it.offerType}}
+                            </td>
+                            <td class="text-right">
+                                <a href="{{bundleHref('contact','admin','contactInfo.edit')}}?id={{it.id}}"><i class="fa fa-edit"></i></a>
+                                <a href="{{bundleHref('contact','admin','contactInfo.doDelete')}}?id={{it.id}}"><i class="fa fa-times"></i></a>
+                            </td>
+                        </tr>
+                        {%else%}
+                        <tr>                        
+                            <td colspan="4" >
+                                No content available.
+                            </td>                        
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {%endmacro%}
+</blockList>
+
+<blockForm>
+    {%macro form(entity,offerTypes)%}
+    {% set isNew = (entity is null) or (entity.id is null) or (entity.id == 0) %}
+    <div class="portlet box green">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-reorder"></i> {{isNew ? "Create":"Edit"}} form
+            </div>        
+        </div>
+        <div class="portlet-body form">
+            <form role="form" method="POST" action="{%if isNew %}{{bundleHref('contact','admin','contactInfo.doCreate')}}{%else%}{{bundleHref('contact','admin','contactInfo.doEdit')}}?id={{entity.id}}{% endif%}">
+                <div class="form-body">
+                    <div class="form-group">
+                        <label for="lastname">Last Name</label>
+                        <input type="text" placeholder="Last Name" id="lastname" name="lastname" class="form-control" value="{{entity.lastname}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="firstname">First Name</label>
+                        <input type="text" placeholder="First Name" id="firstname" name="firstname" class="form-control" value="{{entity.firstname}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="text" placeholder="Email" id="email" name="email" class="form-control" value="{{entity.email}}">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Offer Type</label>
+                        <select name="offerType" class="select2_type form-control" data-placeholder="Choose a type" tabindex="1">
+                            {% for it in offerTypes%}
+                            <option value="{{it}}" {%if it == item.offerType %}selected{%endif%} >{{it}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="offer">Offer</label>
+                        <textarea placeholder="Offer" id="offer" name="offer" class="form-control">{{entity.offer | default('')}}</textarea>                    
+                    </div>
+                </div>
+                <div class="form-actions right">                
+                    <a class="btn default" href="{{bundleHref('contact','admin','contactInfo.index')}}">Cancel</a>
+                    <button class="btn green" type="submit">{{isNew ? "Create":"Edit"}}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {%endmacro%}
+</blockForm>

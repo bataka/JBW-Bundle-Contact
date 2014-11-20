@@ -1,0 +1,39 @@
+{%extends '/layout' %}
+
+
+{%block cssImport%}
+
+{%endblock%}
+{%block jsImport%}
+
+{%endblock%}
+
+
+
+
+{% block body %}
+<div class="contact">
+    {% include "bundle://contact/main/map" %}
+    <div class="contact-form-info">
+        <h3>Холбоо барих</h3>
+        <hr>
+        <div class="row">
+            <div class="col-sm-6">                    
+                {% include "bundle://contact/main/form" %}
+            </div>
+            <div class="col-sm-6">
+                {% include "bundle://contact/main/info" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+{% block jsScript %}
+
+{% endblock %}
+
+

@@ -1,0 +1,192 @@
+{% extends "bundle://theme.admin/layout"%}
+{%import '/admin/sectors' %}
+{%import 'bundle://core/adminUtils' %}
+
+
+{%block cssImport%}
+{%endblock%}
+
+{%block jsImport%}
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyArVPfhyCmC-0dXzKqD0a71bmaBE6W5-Jw&language=mn"></script>
+{%endblock%}
+
+{%block mainMenu%}
+{{adminMenu(request,'contact.admin.contactMap.index')}}
+{%endblock%}
+
+{%block topMenu%}
+{{adminTopMenu(request,'menu')}}
+{%endblock%}
+
+{%block body%}
+{{pageTitle("Map index",'contact manager')}}
+
+{% if error is not empty %}
+<div class="alert alert-warning">
+    {{error}}
+</div>
+{% endif %}
+{% if success is not empty  %}
+<div class="alert alert-success">
+    {{success}}
+</div>
+{% endif %}
+
+
+<div class="row">
+    <div class="col-sm-6">
+        {{list(list)}}
+    </div>
+    <div class="col-sm-6">
+        {{form(entity,listType)}}
+    </div>
+</div>
+<div id="mapDialog" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Select center point</h4>
+            </div>
+            <div class="modal-body">
+                <div class="scroller" style="height:400px" data-always-visible="1" data-rail-visible1="1">
+                    <div class="container">
+                        <div id="map-canvas" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn default">Cancel</button>
+                <button type="button" data-dismiss="modal" id="selBtn" class="btn green">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}
+<blockList>
+    {%macro list(data)%}
+    <div class="portlet box green">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-cogs"></i>Map
+            </div>        
+        </div>
+        <div class="portlet-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Zoom</th>
+                            <th>Center Latitude</th>                        
+                            <th>Center Longitude</th>                        
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for it in data%}
+                        <tr>
+                            <td>
+                                {{it.zoom}}
+                            </td>
+                            <td>
+                                {{it.centerLat}}
+                            </td>
+                            <td>
+                                {{it.centerLong}}
+                            </td>
+                            <td class="text-right">
+                                <a href="{{bundleHref('contact','admin','contactMap.edit')}}?id={{it.id}}"><i class="fa fa-edit"></i></a>
+                                <a href="{{bundleHref('contact','admin','contactMap.doDelete')}}?id={{it.id}}"><i class="fa fa-times"></i></a>
+                            </td>
+                        </tr>
+                        {%else%}
+                        <tr>                        
+                            <td colspan="4" >
+                                No content available.
+                            </td>                        
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {%endmacro%}
+</blockList>
+
+<blockForm>
+    {%macro form(entity,listType)%}
+    {% set isNew = (entity is null) or (entity.id is null) or (entity.id == 0) %}
+    <div class="portlet box green">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-reorder"></i> {{isNew ? "Create":"Edit"}} form
+            </div>        
+        </div>
+        <div class="portlet-body form">
+            <form role="form" method="POST" action="{%if isNew %}{{bundleHref('contact','admin','contactMap.doCreate')}}{%else%}{{bundleHref('contact','admin','contactMap.doEdit')}}?id={{entity.id}}{% endif%}">
+                <div class="form-body">
+                    <div class="form-group">
+                        <label for="mapKey">Key</label>
+                        <input type="text" placeholder="Map key" id="mapKey" name="mapKey" class="form-control" value="{{entity.mapKey}}">
+                    </div>
+                    <div class="form-group">
+                        <a id="mapBtn" href="#mapDialog" data-toggle="modal" class="btn default">Select center point</a>
+                    </div>    
+                    <div class="form-group">
+                        <label for="zoom">Zoom</label>
+                        <input type="number" readonly placeholder="Zoom" id="zoom" name="zoom" class="form-control" value="{{entity.zoom}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="centerLat">Center Latitude</label>
+                        <input type="number" readonly placeholder="Latitude" id="centerLat" name="centerLat" class="form-control" value="{{entity.centerLat}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="centerLong">Center Longitude</label>
+                        <input type="number" readonly placeholder="Longitude" id="centerLong" name="centerLong" class="form-control" value="{{entity.centerLong}}">
+                    </div>
+                </div>
+                <div class="form-actions right">                
+                    <a class="btn default" href="{{bundleHref('contact','admin','contactMap.index')}}">Cancel</a>
+                    <button class="btn green" type="submit">{{isNew ? "Create":"Edit"}}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {%endmacro%}
+</blockForm>
+
+{% block pageScript %}
+<script type="text/javascript">
+
+var lat, lng;
+function initialize() {
+    var myLatlng = new google.maps.LatLng(47.91001390193467, 106.90006256103516);
+    var mapOptions = {
+        zoom: 12,
+        center: myLatlng
+    };
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    var marker = new google.maps.Marker({
+        position: myLatlng,
+        map: map,
+        draggable: true,
+        title: "Drag me!"
+    });
+    google.maps.event.addListener(marker, 'dragend', function() {
+        lat = marker.getPosition().lat();
+        lng = marker.getPosition().lng();
+    });
+    $('#mapDialog').on('shown.bs.modal', function(e) {
+        google.maps.event.trigger(map, 'resize');
+    });
+    $('#selBtn').click(function() {
+        $('#zoom').val(map.getZoom());
+        $('#centerLat').val(lat);
+        $('#centerLong').val(lng);
+    });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+{% endblock %}

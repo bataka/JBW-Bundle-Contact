@@ -1,0 +1,73 @@
+{%block cssImport%}
+
+{%endblock%}
+
+{%block jsImport%}
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyArVPfhyCmC-0dXzKqD0a71bmaBE6W5-Jw&language=mn"></script>
+{%endblock%}
+
+{% block body %}
+<sector class="contact-map">
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="map-canvas" style="height: 300px"></div>
+        </div>
+    </div>
+</sector>
+{%endblock%}
+
+{% block jsScript %}
+<script type="text/javascript">
+
+    function initialize() {
+        var lat = parseFloat("{{map.centerLat}}");
+        var long = parseFloat("{{map.centerLong}}");
+        var zoom = parseInt("{{map.zoom}}");        
+        var myLatlng = new google.maps.LatLng(lat, long);
+        
+        var mapOptions = {
+            zoom: zoom,
+            center: myLatlng
+        };
+        var map = new google.maps.Map(document.getElementById('map-canvas'),
+                mapOptions);
+        var markers = JSON.parse('{{markers | json | raw}}');
+        setMarkers(map, markers);
+    }
+
+    function setMarkers(map, locations) {
+        for (var i = 0; i < locations.length; i++) {
+            var mark = locations[i];
+            var latLng = new google.maps.LatLng(mark.latitude, mark.longitude);
+            var marker = new google.maps.Marker({
+                position: latLng,
+                map: map,
+                title: mark.title
+            });
+            if (mark.markerType === "Home") {
+                marker.setIcon("{{bundleAssetHref('contact','main/home.png')}}");
+            }
+            if (mark.markerType === "Office") {
+                marker.setIcon("{{bundleAssetHref('contact','main/office.png')}}");
+            }
+            if (mark.markerType === "Branch") {
+                marker.setIcon("{{bundleAssetHref('contact','main/branch.png')}}");
+            }
+            addInfoWindow(map, marker, mark.description);
+        }
+    }
+
+    function addInfoWindow(map, marker, content) {
+        var infoWindow = new google.maps.InfoWindow({
+            content: "<div style='width:250px'></div>" + content
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+            infoWindow.open(map, marker);
+        });
+    }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+
+</script>
+{% endblock %}
