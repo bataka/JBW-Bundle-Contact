@@ -50,9 +50,7 @@
             </div>
             <div class="modal-body">
                 <div class="scroller" style="height:400px" data-always-visible="1" data-rail-visible1="1">
-                    <div class="container">
-                        <div id="map-canvas" style="height: 300px;"></div>
-                    </div>
+                    <div id="map-canvas" style="height: 300px;"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -159,16 +157,17 @@
 {% block pageScript %}
 <script type="text/javascript">
 
-var lat, lng;
 function initialize() {
-    var myLatlng = new google.maps.LatLng(47.91001390193467, 106.90006256103516);
+    var lat, lng;
+    var center = new google.maps.LatLng(47.91001390193467, 106.90006256103516);
     var mapOptions = {
         zoom: 12,
-        center: myLatlng
+        center: center
     };
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
     var marker = new google.maps.Marker({
-        position: myLatlng,
+        position: center,
         map: map,
         draggable: true,
         title: "Drag me!"
@@ -177,16 +176,17 @@ function initialize() {
         lat = marker.getPosition().lat();
         lng = marker.getPosition().lng();
     });
-    $('#mapDialog').on('shown.bs.modal', function(e) {
-        google.maps.event.trigger(map, 'resize');
-    });
     $('#selBtn').click(function() {
         $('#zoom').val(map.getZoom());
         $('#centerLat').val(lat);
         $('#centerLong').val(lng);
     });
+    $('#mapDialog').on('shown.bs.modal', function(e) {
+        google.maps.event.trigger(map, 'resize');
+        map.setCenter(center);
+    });
 }
-
 google.maps.event.addDomListener(window, 'load', initialize);
+
 </script>
 {% endblock %}
