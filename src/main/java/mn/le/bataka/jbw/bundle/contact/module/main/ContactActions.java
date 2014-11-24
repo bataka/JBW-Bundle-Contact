@@ -130,7 +130,11 @@ public class ContactActions extends JBWPackageActions {
                 Logger.getLogger(ContactActions.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            return new ActionResult("//index").add("info", getInfo()).add("markers", getMapInfos()).add("offerTypes", Arrays.asList(ContactEntity.OfferType.values()));
+            return new ActionResult("//index")
+                    .add("info", getInfo())
+                    .add("map", getMap())
+                    .add("markers", getMapInfos())
+                    .add("offerTypes", Arrays.asList(ContactEntity.OfferType.values()));
         }
 
         @Override
