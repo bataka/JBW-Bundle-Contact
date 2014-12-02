@@ -1,9 +1,15 @@
 package mn.le.bataka.jbw.bundle.contact.module.main;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mn.le.bataka.jbw.bundle.contact.JBWBundleContact;
 import mn.le.bataka.jbw.bundle.contact.entity.ContactEntity;
 import mn.le.bataka.jbw.bundle.contact.entity.ContactMapEntity;
 import mn.le.bataka.jbw.bundle.contact.entity.ContactMarkerEntity;
@@ -11,6 +17,7 @@ import mn.le.farcek.common.NamedContainer;
 import mn.le.farcek.common.entity.criteria.BinaryOperator;
 import mn.le.farcek.common.entity.criteria.FilterItem;
 import mn.le.farcek.jbw.api.IAction;
+import mn.le.farcek.jbw.api.IBundle;
 import mn.le.farcek.jbw.api.IModule;
 import mn.le.farcek.jbw.api.action.ActionParamHelper;
 import mn.le.farcek.jbw.api.action.ActionParamInfo;
@@ -34,7 +41,7 @@ public class ContactActions extends JBWPackageActions {
         actions.add(new index().setModule(module));
         actions.add(new map().setModule(module));
         actions.add(new form().setModule(module));
-        actions.add(new formPost().setModule(module));
+        actions.add(new send().setModule(module));
         actions.add(new info().setModule(module));
     }
 
@@ -42,6 +49,7 @@ public class ContactActions extends JBWPackageActions {
         List<ContactMarkerEntity> list = getService().entitysBy(ContactMarkerEntity.class, (FilterItem[]) null);
         return list;
     }
+
     private ContactMapEntity getMap() {
         ContactMapEntity map = getService().entityBy(ContactMapEntity.class, new BinaryOperator("mapKey", "main"));
         return map;
@@ -105,7 +113,7 @@ public class ContactActions extends JBWPackageActions {
         }
     }
 
-    public class formPost extends JBWAbstractPostAction {
+    public class send extends JBWAbstractPostAction {
 
         @Override
         public IActionResult execut(IActionParam actionParam) {
@@ -129,6 +137,10 @@ public class ContactActions extends JBWPackageActions {
             } catch (Exception ex) {
                 Logger.getLogger(ContactActions.class.getName()).log(Level.SEVERE, null, ex);
             }
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("entity", entity);
+            JBWBundleContact bundle = (JBWBundleContact) getModule().getBundle();
+            getContext().getMailService().send(bundle.getContactConfig().getProperty("adminMail"), "ШИНЭ САНАЛ ХҮСЭЛТ ИРЛЭЭ!", "bundle://contact/main/mail", params);
 
             return new ActionResult("//index")
                     .add("info", getInfo())

@@ -22,9 +22,9 @@
     function initialize() {
         var lat = parseFloat("{{map.centerLat}}");
         var long = parseFloat("{{map.centerLong}}");
-        var zoom = parseInt("{{map.zoom}}");        
+        var zoom = parseInt("{{map.zoom}}");
         var myLatlng = new google.maps.LatLng(lat, long);
-        
+
         var mapOptions = {
             zoom: zoom,
             center: myLatlng
@@ -53,16 +53,18 @@
             if (mark.markerType === "Branch") {
                 marker.setIcon("{{bundleAssetHref('contact','main/branch.png')}}");
             }
-            addInfoWindow(map, marker, mark.description);
+            addInfoWindow(map, marker, mark.title, mark.description);
         }
     }
 
-    function addInfoWindow(map, marker, content) {
+    function addInfoWindow(map, marker, title, content) {
         var infoWindow = new google.maps.InfoWindow({
-            content: "<div style='width:250px'></div>" + content
+            content: "<div style='width:250px'>" +
+                    "<h4>" + title + "</h4>" +
+                    "<p>" + content + "</p></div>"
         });
 
-        google.maps.event.addListener(marker, 'click', function() {
+        google.maps.event.addListener(marker, 'click', function () {
             infoWindow.open(map, marker);
         });
     }

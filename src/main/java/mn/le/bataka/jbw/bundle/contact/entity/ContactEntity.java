@@ -23,12 +23,10 @@ public class ContactEntity extends FCoreEntity {
     private Integer id;
 
     private OfferType offerType;
-    @Column(columnDefinition = "NVARCHAR(500)")
     private String lastname;
-    @Column(columnDefinition = "NVARCHAR(500)")
     private String firstname;
     private String email;
-    @Column(columnDefinition = "NTEXT")
+    @Column(columnDefinition = "TEXT")
     private String offer;
 
     @Override

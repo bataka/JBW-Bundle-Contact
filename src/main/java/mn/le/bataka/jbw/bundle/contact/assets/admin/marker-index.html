@@ -180,23 +180,26 @@ function initialize() {
         center: center
     };
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    var marker = new google.maps.Marker({
-        position: center,
-        map: map,
-        draggable: true,
-        title: "Drag me!"
-    });
-    google.maps.event.addListener(marker, 'dragend', function() {
+    var marker;
+    google.maps.event.addListener(map, 'click', function (event) {
+        if (marker) {
+            marker.setMap(null);
+        }
+        marker = new google.maps.Marker({
+            position: event.latLng,
+            map: map,
+            title: "Marker"
+        });
         lat = marker.getPosition().lat();
         lng = marker.getPosition().lng();
     });
 
-    $('#mapDialog').on('shown.bs.modal', function(e) {
+    $('#mapDialog').on('shown.bs.modal', function (e) {
         google.maps.event.trigger(map, 'resize');
         map.setCenter(center);
     });
 }
-$('#selBtn').click(function() {
+$('#selBtn').click(function () {
     $('#latitude').val(lat);
     $('#longitude').val(lng);
 });

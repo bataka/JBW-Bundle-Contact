@@ -36,7 +36,7 @@ public class ContactMarkerAdminActions extends SampleCrudActions<ContactMarkerEn
     @Override
     protected void fillFromRequest(ContactMarkerEntity entity, FillFromRequestParam param) {
         entity.setTitle(param.getParamHelper().getParameterString("title", null));
-        entity.setDescription(param.getParamHelper().getParameterString("title", null));
+        entity.setDescription(param.getParamHelper().getParameterString("description", null));
         entity.setLatitude(param.getParamHelper().getParameterDouble("latitude", null));
         entity.setLongitude(param.getParamHelper().getParameterDouble("longitude", null));
         String markerType = param.getParamHelper().getParameterString("markerType", "Home");

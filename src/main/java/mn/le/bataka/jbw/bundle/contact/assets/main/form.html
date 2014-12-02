@@ -1,14 +1,14 @@
-{%block cssImport%}
-
-{%endblock%}
-
-{%block jsImport%}
-
-{%endblock%}
+{%block cssImport%}{%endblock%}
 
 {% block body %}
 <div class="contact-form">
-    <form class="form-horizontal" method="POST" action="{{bundleHref(bundlePath='contact/main/formPost')}}" role="form">
+    <div class="hidden" id="message" style="margin-left: 95px;">
+        <div class="alert alert-success">
+            <a href="#" class="close" data-dismiss="alert">&times;</a>
+            <strong>Таны хүсэлт амжилттай илгээгдлээ!</strong>
+        </div>
+    </div>
+    <form class="form-horizontal" id="contactForm" method="POST" action="{{bundleHref(bundlePath='contact/main/send')}}" role="form">
         <div class="form-group form-group-sm">
             <label class="col-sm-2 control-label">Санал:</label>
             <div class="col-sm-10">
@@ -26,21 +26,21 @@
             </div>
         </div>
         <div class="form-group form-group-sm">
-            <label class="col-sm-2 control-label">Нэр:</label>
+            <label class="col-lg-2 col-md-2 col-sm-2 control-label">Нэр:</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" name="firstname">
             </div>
         </div>
         <div class="form-group form-group-sm">
-            <label class="col-sm-2 control-label">И-мэйл:</label>
+            <label class="col-sm-2 control-label">И-мэйл*:</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="email">
+                <input type="text" required class="form-control" name="email">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-2 control-label">Хүсэлт:</label>
+            <label class="col-sm-2 control-label">Хүсэлт*:</label>
             <div class="col-sm-10">
-                <textarea class="form-control" rows="3" name="offer"></textarea>
+                <textarea class="form-control" required rows="3" name="offer"></textarea>
             </div>
         </div>
         <div class="form-group">
@@ -52,6 +52,17 @@
 </div>
 {%endblock%}
 
+{%block jsImport%}
+{%endblock%}
 {% block jsScript %}
-
+<script>
+    (function() {
+        if (window.location.href.indexOf("send") > -1) {
+            var msgDiv = document.getElementById('message');
+            msgDiv.className = "";
+        } else {
+            document.getElementById('message').className = "hidden";
+        }
+    })();
+</script>
 {% endblock %}

@@ -22,9 +22,8 @@ public class ContactMarkerEntity extends FCoreEntity {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "ContactMarkerEntity")
     private Integer id;
 
-    @Column(columnDefinition = "NVARCHAR(500)")
     private String title;
-    @Column(columnDefinition = "NTEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
     private Double latitude;
     private Double longitude;
