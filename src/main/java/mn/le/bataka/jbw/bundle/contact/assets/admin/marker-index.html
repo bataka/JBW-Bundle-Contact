@@ -190,8 +190,8 @@ function initialize() {
             map: map,
             title: "Marker"
         });
-        lat = marker.getPosition().lat();
-        lng = marker.getPosition().lng();
+        lat = event.latLng.lat();
+        lng = event.latLng.lng();
     });
 
     $('#mapDialog').on('shown.bs.modal', function (e) {
